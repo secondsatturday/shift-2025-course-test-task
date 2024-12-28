@@ -1,4 +1,4 @@
-package ru.subbotin;
+package ru.subbotin.statistics;
 
 public class StringStatistics {
     private int quantity = 0;

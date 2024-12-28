@@ -11,7 +11,7 @@ for /f %%f in ('dir /ad /b .\out') do rd /s /q .\out\%%f
 mkdir .\out\classes
 
 :: Компилирует исходники в каталог classes
-javac -d .\out\classes -sourcepath .\java .\java\ru\subbotin\Main.java
+javac -d .\out\classes -sourcepath .\java .\java\ru\subbotin\FilteringUtilMainClass.java
 
 cd .\out\classes
 

@@ -1,4 +1,4 @@
-package ru.subbotin;
+package ru.subbotin.statistics;
 
 import java.util.Comparator;
 

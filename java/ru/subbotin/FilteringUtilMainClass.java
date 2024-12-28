@@ -1,11 +1,15 @@
 package ru.subbotin;
 
+import ru.subbotin.enums.StatisticsType;
+import ru.subbotin.statistics.NumericStatistics;
+import ru.subbotin.statistics.StringStatistics;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 
-public class Main {
+public class FilteringUtilMainClass {
 
     public static final String DEFAULT_PREFIX = "";
     public static final String DEFAULT_OUTPUT_PATH = "./";
@@ -31,7 +35,7 @@ public class Main {
     private boolean floatsVirgin = true;
     private boolean stringsVirgin = true;
 
-    public Main(final String[] args) {
+    public FilteringUtilMainClass(final String[] args) {
         handleArgs(args);
     }
 
@@ -180,7 +184,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Main app = new Main(args);
+        FilteringUtilMainClass app = new FilteringUtilMainClass(args);
         app.filter();
         app.printStatistics();
     }
