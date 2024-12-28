@@ -16,6 +16,10 @@ public class NumericStatistics<T extends Number> {
         this.comparator = comparator;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
     public void update(T value) {
         quantity++;
         if (minValue == null) {

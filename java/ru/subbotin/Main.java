@@ -23,14 +23,19 @@ public class Main {
     private final NumericStatistics<Float> floatStatistics = new NumericStatistics<>(Float::compareTo);
     private final StringStatistics stringStatistics = new StringStatistics();
 
+    private final List<String> ints = new ArrayList<>(50);
+    private final List<String> floats = new ArrayList<>(50);
+    private final List<String> strings = new ArrayList<>(50);
+
+    private boolean intsVirgin = true;
+    private boolean floatsVirgin = true;
+    private boolean stringsVirgin = true;
+
     public Main(final String[] args) {
         handleArgs(args);
     }
 
     private void handleArgs(final String[] args) {
-        for (String arg : args) {
-            System.out.println(arg);
-        }
         try {
             for (int i = 0; i < args.length; i++) {
                 if (isOption(args[i]) && !inputPaths.isEmpty()) {
@@ -67,35 +72,25 @@ public class Main {
     }
 
     private void filter() {
-
-        Storage storage = new Storage();
-
         for (String inputPath : inputPaths) {
             try (Scanner scanner = new Scanner(new FileInputStream(inputPath), StandardCharsets.UTF_8)) {
                 while (scanner.hasNextLine()) {
-                    if (storage.getLinesTotalNum() >= 2) {
-                        flush(storage);
+                    if (intStatistics.getQuantity() + floatStatistics.getQuantity() +
+                            stringStatistics.getQuantity() >= 100) {
+                        flush();
                     }
                     String line = scanner.nextLine();
                     try {
-//                        char[] chars = line.toCharArray();
-//                        for (int i = 0; i < chars.length; i++) {
-//                            if (Character.getType(chars[i]) != Character.DECIMAL_DIGIT_NUMBER) {
-//                                if (i != 0 || chars[i] != '-') {
-//                                    throw new NumberFormatException();
-//                                }
-//                            }
-//                        }
                         Integer i = Integer.parseInt(line);
-                        storage.addInt(line);
+                        ints.add(line);
                         intStatistics.update(i);
                     } catch (NumberFormatException e) {
                         try {
                             Float f = Float.parseFloat(line);
-                            storage.addFloat(line);
+                            floats.add(line);
                             floatStatistics.update(f);
                         } catch (NumberFormatException nestedE) {
-                            storage.addString(line);
+                            strings.add(line);
                             stringStatistics.update(line);
                         }
                     }
@@ -104,10 +99,10 @@ public class Main {
                 System.err.println("Error: Input file \"" + inputPath + "\" not found. It was skipped.");
             }
         }
-        flush(storage);
+        flush();
     }
 
-    private BufferedWriter newBufferedWriter(String fileName, boolean append) throws FileNotFoundException {
+    private BufferedWriter produceBufferedWriter(String fileName, boolean append) throws FileNotFoundException {
         if (this.append) {
             append = true;
         }
@@ -130,44 +125,40 @@ public class Main {
 
     }
 
-    private void flush(Storage storage) {
-        Iterator<String> iterator = storage.getIntLinesIterator();
-        if (iterator.hasNext()) {
-            try (BufferedWriter bufferedWriter = newBufferedWriter("integers.txt", !storage.getIntLinesVirgin())) {
-                storage.setIntLinesVirgin(false);
-                while (iterator.hasNext()) {
-                    String line = iterator.next();
+    private void flush() {
+        if (!ints.isEmpty()) {
+            try (BufferedWriter bufferedWriter = produceBufferedWriter("integers.txt", !intsVirgin)) {
+                intsVirgin = false;
+                for (String line : ints) {
                     bufferedWriter.write(line + "\n");
                 }
             } catch (IOException e) {
                 System.err.println("Error: integers output failed! Execution continued.");
             }
         }
-        iterator = storage.getFloatLinesIterator();
-        if (iterator.hasNext()) {
-            try (BufferedWriter bufferedWriter = newBufferedWriter("floats.txt", !storage.getFloatLinesVirgin())) {
-                storage.setFloatLinesVirgin(false);
-                while (iterator.hasNext()) {
-                    String line = iterator.next();
+        if (!floats.isEmpty()) {
+            try (BufferedWriter bufferedWriter = produceBufferedWriter("floats.txt", !floatsVirgin)) {
+                floatsVirgin = false;
+                for (String line : floats) {
                     bufferedWriter.write(line + "\n");
                 }
             } catch (IOException e) {
                 System.err.println("Error: floats output failed! Execution continued.");
             }
         }
-        iterator = storage.getStringLinesIterator();
-        if (iterator.hasNext()) {
-            try (BufferedWriter bufferedWriter = newBufferedWriter("strings.txt", !storage.getStringLinesVirgin())) {
-                storage.setStringLinesVirgin(false);
-                while (iterator.hasNext()) {
-                    String line = iterator.next();
+        if (!strings.isEmpty()) {
+            try (BufferedWriter bufferedWriter = produceBufferedWriter("strings.txt", !stringsVirgin)) {
+                stringsVirgin = false;
+                for (String line : strings) {
                     bufferedWriter.write(line + "\n");
                 }
             } catch (IOException e) {
                 System.err.println("Error: strings output failed! Execution continued.");
             }
         }
-        storage.reset();
+        ints.clear();
+        floats.clear();
+        strings.clear();
     }
 
     public void printStatistics() {

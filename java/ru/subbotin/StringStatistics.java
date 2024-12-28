@@ -6,6 +6,10 @@ public class StringStatistics {
     Integer minLength = null;
     Integer maxLength = null;
 
+    public int getQuantity() {
+        return quantity;
+    }
+
     public void update(String value) {
         quantity++;
         int length = value.length();
