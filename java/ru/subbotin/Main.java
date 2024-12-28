@@ -63,7 +63,7 @@ public class Main {
     }
 
     private boolean isOption(String arg) {
-        return arg.equals("-o") || arg.equals("-p");
+        return arg.equals("-o") || arg.equals("-p") || arg.equals("-a") || arg.equals("-s") || arg.equals("-f");
     }
 
     private void filter() {
